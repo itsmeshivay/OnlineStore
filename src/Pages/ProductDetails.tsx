@@ -2,16 +2,24 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { CartContext } from "../context/CartContext";
 
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  description: string;
+}
+
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const context = useContext(CartContext);
 
+  const [product, setProduct] = useState<Product | null>(null);
+  const [error, setError] = useState("");
+
   if (!context) return null;
-
   const { addToCart } = context;
-
-  const [product, setProduct] = useState<any>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -19,17 +27,29 @@ function ProductDetail() {
     fetch("https://fakestoreapi.com/products/" + id)
       .then((res) => res.json())
       .then((data) => setProduct(data))
-      .catch((err) => console.log(err));
+      .catch(() => setError("Failed to load product"));
   }, [id]);
 
-  if (!product) {
-    return <h2 className="text-center mt-10">Loading...</h2>;
-  }
+  if (error) return <h2>{error}</h2>;
+  if (!product) return <h2 className="text-center mt-10">Loading...</h2>;
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+    });
+
+    alert("Item added to cart");
+
+    navigate("/cart");
+  };
 
   return (
     <div className="p-6">
       <button
-        onClick={() => navigate("/")}
+        onClick={() => navigate(-1)}
         className="bg-gray-200 px-3 py-1 rounded"
       >
         Back
@@ -39,7 +59,7 @@ function ProductDetail() {
         <div className="flex justify-center">
           <img
             src={product.image}
-            alt=""
+            alt={product.title}
             className="h-52 object-contain"
           />
         </div>
@@ -50,14 +70,7 @@ function ProductDetail() {
           <p className="mt-3 font-bold">₹ {product.price}</p>
 
           <button
-            onClick={() =>
-              addToCart({
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                image: product.image,
-              })
-            }
+            onClick={handleAddToCart}
             className="bg-black text-white px-4 py-2 mt-4 rounded"
           >
             Add to Cart

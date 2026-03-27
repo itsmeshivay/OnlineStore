@@ -3,20 +3,22 @@ import Home from "./Pages/Home";
 import ProductDetail from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
 import Navbar from "./Components/Navbar";
+import { CartProvider } from "./context/CartContext";
 
 function App() {
   return (
-    <BrowserRouter>
-    <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-                <Route path="/products" element={<Home />} />
+    <CartProvider>
+      <BrowserRouter>
+        <Navbar />
 
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
+        </Routes>
 
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/cart" element={<Cart />} />
-      </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+    </CartProvider>
   );
 }
 

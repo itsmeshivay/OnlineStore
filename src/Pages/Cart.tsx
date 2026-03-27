@@ -3,19 +3,20 @@ import { CartContext } from "../context/CartContext";
 
 function Cart() {
   const context = useContext(CartContext);
+
   if (!context) return null;
 
-  const { cart, removeFromCart } = context;
+  const { cart, addToCart, decreaseQuantity, removeFromCart, getTotalPrice } =
+    context;
 
-  const totalItems = cart.length;
-  const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4"> Cart</h1>
+      <h1 className="text-2xl font-bold mb-4">Cart</h1>
 
       {cart.length === 0 ? (
-        <p> cart is empty</p>
+        <p>Your cart is empty</p>
       ) : (
         cart.map((item) => (
           <div
@@ -31,6 +32,23 @@ function Cart() {
             <div className="flex-1">
               <h2 className="text-sm font-semibold">{item.title}</h2>
               <p>₹ {item.price}</p>
+              <p className="text-sm mt-1">Qty: {item.quantity}</p>
+            </div>
+
+            <div className="flex gap-2 items-center">
+              <button
+                onClick={() => decreaseQuantity(item.id)}
+                className="px-2 py-1 bg-gray-200"
+              >
+                -
+              </button>
+
+              <button
+                onClick={() => addToCart(item)}
+                className="px-2 py-1 bg-gray-200"
+              >
+                +
+              </button>
             </div>
 
             <button
@@ -46,7 +64,7 @@ function Cart() {
       <div className="mt-6 border-t pt-4">
         <p className="font-semibold">Total Items: {totalItems}</p>
         <p className="text-lg font-bold mt-2">
-          Total Price: ₹ {totalPrice.toFixed(2)}
+          Total Price: ₹ {getTotalPrice().toFixed(2)}
         </p>
       </div>
     </div>
